@@ -2,7 +2,7 @@
 FROM oven/bun:canary-alpine AS viewer
 
 # Flatmap package versions to install
-ENV SERVER_VERSION=v1.10.3
+ENV SERVER_VERSION=v1.10.4
 ENV VIEWER_VERSION=v4.7.1
 
 # First build the viewer distribution
