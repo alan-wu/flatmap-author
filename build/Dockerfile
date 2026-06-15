@@ -1,43 +1,47 @@
-# Pulls an image containing Python 3.12, Node.js (LTS), and npm
-FROM nikolaik/python-nodejs:python3.12-nodejs24
+# Use `bun` to build the viewer
+FROM oven/bun:canary-alpine AS viewer
 
 # Flatmap package versions to install
 ENV SERVER_VERSION=v1.10.3
 ENV VIEWER_VERSION=v4.6.4
 
-# Set sume Python environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# First build the viewer distribution
+WORKDIR /build
 
-# Install Git and `mapmaker` dependecies
-RUN apt-get update && \
+# Get the viewer's sources and build it
+RUN apk add --no-cache bash git; \
+    git clone  --depth 1 --branch ${VIEWER_VERSION} --recurse-submodules \
+        https://github.com/AnatomicMaps/flatmap-viewer.git viewer; \
+    cd viewer; \
+    bun install --ignore-scripts --no-progress; \
+    bash ./scripts/postinstall.sh; \
+    bun run build
+
+# Python with `uv` for the server
+FROM astral/uv:python3.12-trixie-slim
+
+# Install curl, build tools, and mapmaker's dependencies
+RUN apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
     git \
-    libfontconfig1 libegl1 libgl1 \
-    && rm -rf /var/lib/apt/lists/*
+    libfontconfig1 libegl1 libgl1; \
+    rm -rf /var/lib/apt/lists/*
 
-# Install `bun` and `vite`
-RUN npm install -g bun vite
+# Create directories
+WORKDIR /maker
+WORKDIR /server/viewer/app/dist
 
-# Install `uv`
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-# Verify installations
-RUN cat /etc/os-release
-RUN git --version && node --version && bun --version && python3 --version && uv --version
-
-# Install Flatmap packages here
-WORKDIR /flatmaps
-
-# Install map server
-RUN git clone --depth 1 --branch ${SERVER_VERSION} \
-        https://github.com/AnatomicMaps/flatmap-server.git server && \
-    cd server && \
+# Install the map server
+WORKDIR /
+RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/v1.10.3.tar.gz | \
+    tar xz -C server --strip-components=1; \
+    cd server; \
     uv sync
 
-# Install the map viewer as part of the server
-WORKDIR /flatmaps/server
-RUN git clone  --depth 1 --branch ${VIEWER_VERSION} --recurse-submodules \
-        https://github.com/AnatomicMaps/flatmap-viewer.git viewer && \
-    cd viewer && \
-    bun install
+
+# Copy the built viewer into the server tree
+COPY --from=viewer /build/viewer/app/dist /server/viewer/app/dist
+
+
