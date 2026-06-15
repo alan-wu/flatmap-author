@@ -35,7 +35,7 @@ WORKDIR /server/viewer/app/dist
 
 # Install the map server
 WORKDIR /
-RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/v1.10.3.tar.gz | \
+RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/${SERVER_VERSION}.tar.gz | \
     tar xz -C server --strip-components=1; \
     cd server; \
     uv sync
