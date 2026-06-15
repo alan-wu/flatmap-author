@@ -1,12 +1,39 @@
-name: Flatmap Server
+name: Flatmap
 services:
-    flatmap:
-        ports:
-            - 8000:8000
+    server:
+        image: flatmap
+        working_dir: /server
+        container_name: flatmap-server
         environment:
-            SCICRUNCH_API_KEY: ${SCICRUNCH_API_KEY}
-            SERVER_INTERFACE: 0.0.0.0
+          FLATMAP_ROOT: /flatmaps
+          PYTHONWARNINGS: ignore
+          SCICRUNCH_API_KEY: ${SCICRUNCH_API_KEY}
+          SERVER_INTERFACE: 0.0.0.0
+        ports:
+          - 8000:8000
         stdin_open: true
         tty: true
-        image: flatmap
+        volumes:
+          - flatmaps:/flatmaps
         command: uv run python -m mapserver viewer
+
+    maker:
+        image: flatmap
+        working_dir: /server
+        container_name: flatmap-maker
+        environment:
+          FLATMAP_ROOT: /flatmaps
+          GIT_CONFIG_COUNT: 1
+          GIT_CONFIG_KEY_0: safe.directory
+          GIT_CONFIG_VALUE_0: /maker/sources
+          PYTHONWARNINGS: ignore
+          SCICRUNCH_API_KEY: ${SCICRUNCH_API_KEY}
+        stdin_open: true
+        tty: true
+        volumes:
+          - flatmaps:/flatmaps
+          - ${FLATMAP_SOURCE_DIR}:/maker/sources:ro
+        command: tail -f /dev/null
+
+volumes:
+  flatmaps:
