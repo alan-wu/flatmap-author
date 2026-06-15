@@ -40,12 +40,15 @@ RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/v1.
     cd server; \
     uv sync
 
-
 # Copy the built viewer into the server tree
 COPY --from=viewer /build/viewer/app/dist /server/viewer/app/dist
 
 # Copy mapmaker app
 COPY ./maker/runmaker.py /server
+
+# Fix `fatal: detected dubious ownership in repository` errors from git when
+# accessing host repositories from inside container
+RUN git config --global --add safe.directory '*'
 
 # Initialise the `flatmaps` volume with a pre-built anatomical term hierarchy
 WORKDIR /flatmaps
