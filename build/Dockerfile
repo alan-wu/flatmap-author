@@ -45,3 +45,6 @@ RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/v1.
 COPY --from=viewer /build/viewer/app/dist /server/viewer/app/dist
 
 
+# Initialise the `flatmaps` volume with a pre-built anatomical term hierarchy
+WORKDIR /flatmaps
+COPY ./flatmaps/* /flatmaps
