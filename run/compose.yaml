@@ -32,7 +32,7 @@ services:
         tty: true
         volumes:
           - flatmaps:/flatmaps
-          - ${FLATMAP_SOURCE_DIR}:/maker/sources:ro
+          - ${FLATMAP_SOURCE_ROOT}:/maker/sources:ro
         command: tail -f /dev/null
 
 volumes:
