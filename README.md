@@ -67,9 +67,9 @@
     python runmaker.py --source SOURCE_MANIFEST_PATH [OTHER OPTIONS]
     ```
 * The `SOURCE_MANIFEST_PATH` must be under the `FLATMAP_SOURCE_ROOT` directory tree.
-* Due to issues with `git` accessing host files when running in a container, the map's sources cannot be in a repository which is a submodule of some parent.
 * `python` above can be the system Python -- the `runmaker.py` wrapper uses no third-party packages and doesn't have to be installed into a virtual Python environment.
 * `python runmaker.py --help` shows `mapmaker`'s runtime help. All options can be used, although `--output` is ignored.
+* Due to issues with `git` accessing host files from a container, if the map's sources are part of a git-submodule then the parent repository must also be under the `FLATMAP_SOURCE_ROOT` tree.
 
 ---
 
