@@ -1,8 +1,7 @@
 # Use `bun` to build the viewer
 FROM oven/bun:canary-alpine AS viewer
 
-# Flatmap package versions to install
-ENV SERVER_VERSION=v1.10.4
+# Flatmap viewer to install
 ENV VIEWER_VERSION=v4.7.1
 
 # First build the viewer distribution
@@ -20,6 +19,9 @@ RUN apk add --no-cache bash git; \
 # Python with `uv` for the server
 FROM astral/uv:python3.12-trixie-slim
 
+# Flatmap server to install
+ENV SERVER_VERSION=v1.10.4
+
 # Install curl, build tools, and mapmaker's dependencies
 RUN apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -36,7 +38,7 @@ WORKDIR /server/viewer/app/dist
 # Install the map server
 WORKDIR /
 RUN curl -L https://github.com/AnatomicMaps/flatmap-server/archive/refs/tags/${SERVER_VERSION}.tar.gz | \
-    tar xz -C server --strip-components=1; \
+        tar xz -C server --strip-components=1; \
     cd server; \
     uv sync
 
