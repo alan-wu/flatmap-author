@@ -22,11 +22,12 @@ FROM astral/uv:python3.12-trixie-slim
 # Flatmap server to install
 ENV SERVER_VERSION=v1.10.4
 
-# Install curl, build tools, and mapmaker's dependencies
+# Install curl, build and font tools, and mapmaker's dependencies
 RUN apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     curl \
     build-essential \
+    fontconfig \
     git \
     libfontconfig1 libegl1 libgl1; \
     rm -rf /var/lib/apt/lists/*
@@ -57,3 +58,11 @@ RUN git config --global --add safe.directory '*'
 WORKDIR /flatmaps
 COPY ./flatmaps/* /flatmaps
 RUN gunzip sparc-distances.npy.gz
+
+# Install fonts that are used in SVGs exported from Powerpoint
+RUN mkdir -p /usr/share/fonts/truetype/calibri/
+COPY ./fonts/calibri*.ttf /usr/share/fonts/truetype/calibri/
+RUN mkdir -p /usr/share/fonts/truetype/custom
+COPY ./fonts/cambria.ttc /usr/share/fonts/truetype/custom/
+RUN chmod 644 /usr/share/fonts/truetype/custom/*; \
+    fc-cache -fv
