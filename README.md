@@ -73,6 +73,43 @@
 
 ---
 
+## Sample maps
+
+### Test flatmap:
+
+The [test flatmap](https://github.com/AnatomicMaps/test-flatmap) can be made by referencing its GitHub repository when running `runmaker.py`:
+
+```
+python runmaker.py \
+        --source https://github.com/AnatomicMaps/test-flatmap \
+        --manifest manifest.json \
+        --background-tiles
+```
+
+Alternatively the repository and be cloned, into the `FLATMAP_SOURCE_ROOT` directory tree and made with:
+
+```
+python runmaker.py \
+        --source /PATH/TO/test-flatmap/manifest.json \
+        --background-tiles
+```
+
+(assuming `/PATH/TO` is under the `FLATMAP_SOURCE_ROOT` directory).
+
+### Functional connectivity flatmap:
+
+The the published version of the [simple blood volume model on PMR](https://models.physiomeproject.org/e/d77) can be made by cloning its repository and running:
+
+```
+python3 runmaker.py \
+        --source /PATH/TO/CLONE/map/BloodVolumeControl.manifest.json \
+        --background-tiles
+```
+
+(again assuming `/PATH/TO` is under the `FLATMAP_SOURCE_ROOT` directory).
+
+---
+
 ## Viewing maps:
 
 * Point a web browser at http://localhost:8000/viewer, substituting the value of `FLATMAP_SERVER_PORT` for `8000` if it was set above.
