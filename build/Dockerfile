@@ -20,7 +20,7 @@ RUN apk add --no-cache bash git; \
 FROM astral/uv:python3.12-trixie-slim
 
 # Flatmap server to install
-ENV SERVER_VERSION=v1.10.4
+ENV SERVER_VERSION=v1.10.5
 
 # Install curl, build and font tools, and mapmaker's dependencies
 RUN apt-get update; \
